@@ -1,0 +1,32 @@
+---
+- name: create swap files in aws servers
+  hosts:  aws
+  remote_user: centos
+  become: yes
+  tasks:
+    - name: craete swap file in home
+      command:  "dd if=/dev/zero of=/home/swapfile count=4096 bs=1MiB"
+
+    - name: change permission
+      file:
+        path: /home/swapfile
+        owner:  root
+        group:  root
+        mode: 600
+
+    - name: make swap file
+      command:  "sudo mkswap /home/swapfile"
+
+    - name: swapon process
+      command:  "swapon /home/swapfile"
+
+    - name: write to fstab
+      mount:
+        name: swap
+        src:  /home/swapfile
+        fstype: swap
+        opts: sw
+        passno: 0
+        dump: 0
+        state:  present
+

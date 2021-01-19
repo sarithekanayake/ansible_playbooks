@@ -1,0 +1,32 @@
+---
+- name: Change min max values and version in egypt
+  hosts:  egypt
+  remote_user:  directfn
+  gather_facts: no
+  vars_files:
+    - minmaxvalues.yml
+  tasks:
+    - name: Get current date 
+      command:  "date '+%Y-%m-%d'"
+      register: today
+
+    - name: create backup file
+      copy:
+        src:  /home/directfn/app/analyzer/classes/config/listener.ini
+        dest: /home/directfn/app/analyzer/classes/config/listener.ini-{{  today.stdout  }}
+        remote_src: yes
+        mode: '0755'
+
+    - name: edit min max values
+      lineinfile:
+        path: /home/directfn/app/analyzer/classes/config/listener.ini
+        regexp: "^CONFIGURABLE_MIN_MAX="
+        line: CONFIGURABLE_MIN_MAX={{ min_max_value }}
+
+    - name: edit min max version
+      lineinfile:
+        path: /home/directfn/app/analyzer/classes/config/listener.ini
+        regexp: "^CONFIGURABLE_MIN_MAX_VERSION="
+        line: CONFIGURABLE_MIN_MAX_VERSION=1
+
+

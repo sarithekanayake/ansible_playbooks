@@ -1,0 +1,64 @@
+#!/bin/bash
+
+#cd 
+
+RED="\e[1;31m"
+YELLOW="\e[1;33m"
+GREEN="\e[1;32m"
+LUE="\e[1;34m"
+END="\e[0m"
+
+echo -e "${RED}"
+echo " __    __     __     __   __     __    __     ______     __  __   "                                                                                                                             
+echo "/\ \"-./  \   /\ \   /\ \"-.\ \   /\ \"-./  \   /\  __ \   /\_\_\_\   "
+echo "\ \ \-./\ \  \ \ \  \ \ \-.  \  \ \ \-./\ \  \ \  __ \  \/_/\_\/_  "
+echo " \ \_\ \ \_\  \ \_\  \ \_\\ \"\_\  \ \_\ \ \_\  \ \_\ \_\   /\_\/\_\ "
+echo "  \/_/  \/_/   \/_/   \/_/ \/_/   \/_/  \/_/   \/_/\/_/   \/_/\/_/ "
+echo -e "${END}\n\n"
+
+YELLOW="\e[1;33m"
+GREEN="\e[1;32m"
+BLUE=""
+END="\e[0m"
+
+echo -e "  ${YELLOW}View MinMax${END}\t${GREEN}01${END}"
+echo -e "  ${YELLOW}Change MinMax${END}\t${GREEN}02${END}"
+echo -e "  ${YELLOW}Clear MinMax${END}\t${GREEN}03${END}\n"
+
+echo -en "${LUE}Enter your selection: ${END}" ; read selection 
+
+if [[ $selection -eq 1 ]];
+then
+  ansible all -m shell -a "grep ^CONFIGURABLE /home/directfn/app/analyzer/classes/config/listener.ini " -u directfn
+  exit 0
+
+elif [[ $selection -eq 2 ]];
+then
+  echo -en "${LUE}Enter MinMax new value: ${END}" ; read minmax
+  echo -en "\n${RED}Do you wish to continue (y or n): ${END}"; read ans
+
+  if [[ $ans == 'y' ]] || [[ $ans == 'Y' ]];
+  then
+    sed -i -e "s/\(min_max_value: \).*/\1$minmax/" minmaxvalues.yml
+    ansible-playbook change_min_max.yml
+    exit 0
+
+  elif [[ $ans == 'n' ]] || [[ $ans == 'N' ]];
+  then
+    echo "No changes for exisiting conf"
+    exit 0
+
+  else
+    echo "Enter valid option (y or n)"
+    exit 1
+  fi
+
+elif [[ $selection -eq 3 ]];
+then
+  ansible-playbook clear_min_max.yml
+  exit 0
+
+else
+  echo "Enter a valid number (1 to 4)"
+  exit 1
+fi

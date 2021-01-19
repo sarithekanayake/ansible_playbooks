@@ -1,0 +1,19 @@
+---
+- name: Remove min max values and version in egypt
+  hosts:  egypt
+  remote_user:  directfn
+  gather_facts: no
+  tasks:
+    - name: Remove min max values
+      lineinfile:
+        path: /home/directfn/app/analyzer/classes/config/listener.ini
+        regexp: "^CONFIGURABLE_MIN_MAX="
+        line: CONFIGURABLE_MIN_MAX=
+
+    - name: Remove min max version
+      lineinfile:
+        path: /home/directfn/app/analyzer/classes/config/listener.ini
+        regexp: "^CONFIGURABLE_MIN_MAX_VERSION="
+        line: CONFIGURABLE_MIN_MAX_VERSION=0
+
+
